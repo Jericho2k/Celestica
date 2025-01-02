@@ -8,9 +8,9 @@ FPS = 60
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-# Font for ASCII rendering
+# Font for ASCII rendering with emoji support
 pygame.init()
-FONT = pygame.font.SysFont("Courier", 20)
+FONT = pygame.font.SysFont("Segoe UI Emoji", 20)  # Поддержка эмодзи
 
 # ASCII characters for shading
 ASCII_CHARS = ".,-~:;=!*#$@"

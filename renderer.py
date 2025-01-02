@@ -22,8 +22,10 @@ def render_sphere(
                 px, py, depth = project_3d_to_2d(x, y, z, scale)
 
                 if 0 <= px < WIDTH and 0 <= py < HEIGHT:
-                    luminance_index = int((depth - 0.5) * len(chars))
-                    char = chars[min(max(luminance_index, 0), len(chars) - 1)]
+                    # Calculate luminance index
+                    luminance_index = int(((depth - 0.5) / 2) * len(chars))
+                    luminance_index = max(0, min(len(chars) - 1, luminance_index))
+                    char = chars[luminance_index]
                     if depth > z_buffer[py][px]:
                         z_buffer[py][px] = depth
                         output.append((px, py, char))

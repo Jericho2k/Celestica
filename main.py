@@ -1,14 +1,16 @@
 import pygame
+import math
 from config import WIDTH, HEIGHT, BLACK, FPS, RADIUS, MERCURY_RADIUS, MERCURY_SCALE, MERCURY_CHARS, SCALE, WHITE
-from camera import zoom_camera, move_camera
+from camera import zoom, x_offset, y_offset, move_camera, zoom_camera
 from renderer import render_sphere
 from physics import calculate_mercury_position
-from symbols import ASCII_CHARS, MERCURY_CHARS
+from background import generate_stars, render_stars
+from symbols import *
 
 # Initialize Pygame
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Celestica: ASCII Space")
+pygame.display.set_caption("Celestica: ASCII Test Object with Stars")
 clock = pygame.time.Clock()
 
 # Keys state
@@ -21,12 +23,28 @@ keys = {
     "move_right": False,
 }
 
+# Generate the starry background
+stars = generate_stars(num_stars=300)  # Adjust the number of stars if needed
+
+# Sun animation phase
+sun_phase = 0
+
 def main():
+    global zoom, x_offset, y_offset, sun_phase
     running = True
 
     while running:
         screen.fill(BLACK)
 
+        # Update Sun animation phase
+        sun_phase += 1
+        if sun_phase > 628:  # Reset the phase after a full cycle
+            sun_phase = 0
+
+        # Draw the starry background
+        render_stars(screen, stars)
+
+        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -57,7 +75,7 @@ def main():
                 elif event.key == pygame.K_DOWN:
                     keys["zoom_out"] = False
 
-        # Adjust zoom and panning
+        # Adjust zoom and camera panning
         if keys["zoom_in"]:
             zoom_camera(0.01)
         if keys["zoom_out"]:
@@ -71,20 +89,19 @@ def main():
         if keys["move_right"]:
             move_camera(-10, 0)
 
-        # Render the Sun with appropriate ASCII_CHARS and steps
+        # Render the Sun with animation
         render_sphere(
             screen,
             RADIUS,
             offset_x=0,
             offset_y=0,
             offset_z=0,
-            chars=ASCII_CHARS,  # Ensure correct character set is used
+            chars=ASCII_CHARS,
             scale=SCALE,
-            step_theta=10,  # Adjust steps for better detail
-            step_phi=10,
+            step_theta=10 + int(5 * math.sin(sun_phase / 100)),  # Change steps for animation
+            step_phi=10 + int(5 * math.cos(sun_phase / 100)),
             full_sphere=False,
         )
-
 
         # Calculate Mercury's position
         mercury_x, mercury_y = calculate_mercury_position()
